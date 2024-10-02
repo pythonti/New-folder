@@ -1,0 +1,91 @@
+#define lilbeans 40
+#define lilwater 90
+#define lilmilk 150
+#define lilsyrup 40
+#define adminpass "caffeinebox"
+
+float total_amt = 0.0;
+int beans_amt, water_amt, milk_amt, syrup_amt;
+int beansadded, wateradded, milkadded, syrupadded;
+float espresso_price = 3.5;
+float cappuccino_price = 4.5;
+float mocha_price = 5.5;
+
+bool availabiltycoffee(int beans, int water, int milk, int syrup) {
+    return beans_amt >= beans && water_amt >= water && 
+           milk_amt >= milk && syrup_amt >= syrup;
+}
+
+void usedingredients(int beans, int water, int milk, int syrup) {
+    beans_amt -= beans;
+    water_amt -= water;
+    milk_amt -= milk;
+    syrup_amt -= syrup;
+}
+
+void checkingforlowquantities(){
+    if (beans_amt<=lilbeans)
+        printf("Insufficient beans.");
+    if (water_amt<=lilwater)
+        printf("Insufficient water.");
+    if (milk_amt<=lilmilk)
+        printf("Insufficient milk.");
+    if (syrup_amt<=lilsyrup)
+        printf("Insufficient syrup.");
+}
+
+void replenish_ingredients() {
+    printf("Enter the number of beans added: ");
+    scanf("%d",beansadded);
+    if (beansadded>lilbeans)
+        printf("Beans have been replenished.");
+    else
+        printf("Not enough. Add more.");
+    printf("Enter the amount of water added: ");
+    scanf("%d",wateradded);
+    if (wateradded>lilwater)
+        printf("Water has been replenished.");
+    else
+        printf("Not enough. Add more.");
+    printf("Enter the amount of milk added: ");
+    scanf("%d",milkadded);
+    if (milkadded>lilmilk)
+        printf("Milk has been replenished.");
+    else
+        printf("Not enough. Add more.");
+    printf("Enter the amount of syrup added: ");
+    scanf("%d",syrupadded);
+    if (syrupadded>lilsyrup)
+        printf("Syrup has been replenished."); 
+    else
+        printf("Not enough. Add more."); 
+}
+
+int main() {
+  int i;
+  while (1){
+    printf(" Enter your option from the menu: ");
+    printf("1. Order a coffee type.");
+    scanf("%d", &i);
+    printf("2. Admin mode for the coffee maker operator.");
+    scanf("%d",&i);
+    printf("3. End the application execution. ");
+    scanf("%d",&i);
+    if(i==3)
+        break;  
+    else if (i==1)
+       {
+        int a;
+        printf("1. Espresso"); 
+        scanf("%d",&a);
+             
+       
+       }
+    else  if (i==2){
+        int b
+        printf(" 1. Check current number of ingredients. %d\n", i);
+        scanf("%d",&b);
+
+    }  
+  }
+}
