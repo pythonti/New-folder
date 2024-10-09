@@ -1,0 +1,401 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define espressobeans 8
+#define cappuccinobeans 8
+#define mochabeans 8
+#define espressowater 30
+#define cappuccinowater 30
+#define mochawater 39
+#define cappuccinomilk 70
+#define mochamilk 160
+#define mochasyrup 30
+
+#define lilbeans 10
+#define lilwater 40
+#define lilmilk 170
+#define lilsyrup 32
+#define adminpass "caffeinebox"
+
+float total_amt = 0.0;
+int beans_amt = 2;    
+int water_amt = 2000;
+int milk_amt = 2000;
+int syrup_amt = 4000;
+int espresso_sold = 0;
+int cappuccino_sold = 0;    
+int mocha_sold = 0;
+int beansadded, wateradded, milkadded, syrupadded;
+float espresso_price = 3.5;
+float cappuccino_price = 4.5;
+float mocha_price = 5.5;
+
+bool availabilitycoffee(int beans, int water, int milk, int syrup) {
+    return beans_amt >= beans && water_amt >= water && 
+           milk_amt >= milk && syrup_amt >= syrup;
+}
+
+void usedingredients(int beans, int water, int milk, int syrup) {
+    beans_amt -= beans;
+    water_amt -= water;
+    milk_amt -= milk;
+    syrup_amt -= syrup;
+}
+
+void checkingforlowquantities(){
+    if (beans_amt<=lilbeans)
+        printf("Insufficient beans.\n");
+    if (water_amt<=lilwater)
+        printf("Insufficient water.\n");
+    if (milk_amt<=lilmilk)
+        printf("Insufficient milk.\n");
+    if (syrup_amt<=lilsyrup)
+        printf("Insufficient syrup.\n");
+}
+
+void order_coffee(){
+    int choice;
+    float price;
+    float payment = 0;
+    float coins;
+
+    while (true){
+        printf("\nCOFFEE\n");
+        
+        if (availabilitycoffee(espressobeans, espressowater, 0, 0))
+            printf("1. Espresso - %.2f AED\n", espresso_price);
+        else
+            printf("Espresso temporarily unavailable.\n");
+        
+        if (availabilitycoffee(cappuccinobeans, cappuccinowater, cappuccinomilk, 0))
+            printf("2. Cappuccino - %.2f AED \n", cappuccino_price);
+        else
+            printf("Cappuccino temporarily unavailable.\n");
+        
+        if (availabilitycoffee(mochabeans, mochawater, mochamilk, mochasyrup))
+            printf("3. Mocha - %.2f AED\n", mocha_price);
+        else 
+            printf("Mocha temporarily unavailable.\n");
+        
+        printf("0. Exit \n");
+        printf("Enter your choice (1/2/3/0): ");
+        scanf("%d", &choice);
+        
+        if (choice == 0) return;
+
+        switch (choice) {
+            case 1:
+                if (!availabilitycoffee(espressobeans, espressowater, 0, 0)){
+                    printf("Sorry, unavailable Espresso. Returning back...\n");
+                    continue;
+                }
+                price = espresso_price;
+                break;
+            case 2:
+                if (!availabilitycoffee(cappuccinobeans, cappuccinowater, cappuccinomilk, 0)){
+                    printf("Sorry, unavailable Cappuccino. Returning back...\n");
+                    continue;
+                }
+                price = cappuccino_price;
+                break;
+            case 3:
+                if (!availabilitycoffee(mochabeans, mochawater, mochamilk, mochasyrup)){
+                    printf("Sorry, unavailable Mocha. Returning back...\n");
+                    continue;
+                }
+                price = mocha_price;
+                break;
+            default:
+                printf("Invalid choice. Try again.\n");
+                continue;
+        }
+
+        printf("You selected: ");
+        switch(choice){
+            case 1: printf("Espresso"); break;
+            case 2: printf("Cappuccino"); break;
+            case 3: printf("Mocha"); break;
+        }
+        printf(" Price: %.2f AED\n", price);
+        printf("Confirm your selection (1 for Yes, 0 for No): ");
+        int confirm;
+        scanf("%d", &confirm);
+        if (!confirm) continue;
+
+        while (payment < price) {
+            printf("Please insert coins (0.5 or 1 AED). Remaining: %.2f AED\n", price - payment);
+            scanf("%f", &coins);  
+            if (coins != 0.5 && coins != 1) {
+                printf("Invalid coin. Please insert 0.5 or 1 AED.\n");
+                continue;
+            }
+            payment += coins;  
+        }
+
+        switch (choice) {
+            case 1: espresso_sold += 1; break;
+            case 2: cappuccino_sold += 1; break;
+            case 3: mocha_sold += 1; break;
+        }
+
+        switch (choice) {
+            case 1:
+                usedingredients(espressobeans, espressowater, 0, 0);
+                break;
+            case 2:
+                usedingredients(cappuccinobeans, cappuccinowater, cappuccinomilk, 0);
+                break;
+            case 3: 
+                usedingredients(mochabeans, mochawater, mochamilk, mochasyrup);
+                break;
+        }
+        
+        total_amt += price; 
+        printf("\nThank you for your order. ");
+        switch (choice) {
+            case 1: printf("Espresso"); break;
+            case 2: printf("Cappuccino"); break;
+            case 3: printf("Mocha"); break;
+        }
+        printf("!\n");
+        printf("Price: %.2f AED\n", price);
+        printf("You paid: %.2f AED\n", payment);
+        printf("Change amount: %.2f AED\n", payment-price);
+        
+        checkingforlowquantities();
+        printf("\nDo you want to place another order? (1 for Yes, 0 for No): ");
+        scanf("%d", &confirm);
+        if (!confirm) return;
+    }
+}
+
+int restock_ingredients() {
+
+    while (beans_amt < lilbeans) {
+        printf("Enter the number of beans added: \n");
+        scanf("%d", &beansadded);
+        beans_amt += beansadded;
+        if (beans_amt >= lilbeans) {
+            printf("Beans have been restocked.\n");
+        } else {
+            printf("Still insufficient beans. Please add more.\n");
+        }
+    }
+    while (water_amt < lilwater) {
+        printf("Enter the amount of water added: \n");
+        scanf("%d", &wateradded);
+        water_amt += wateradded;
+        if (water_amt >= lilwater) {
+            printf("Water has been restocked.\n");
+        } else {
+            printf("Still insufficient water. Please add more.\n");
+        }
+    }
+    while (milk_amt < lilmilk) {
+        printf("Enter the amount of milk added: \n");
+        scanf("%d", &milkadded);
+        milk_amt += milkadded;
+        if (milk_amt >= lilmilk) {
+            printf("Milk has been restocked.\n");
+        } else {
+            printf("Still insufficient milk. Please add more.\n");
+        }
+    }
+    while (syrup_amt < lilsyrup) {
+        printf("Enter the amount of syrup added: \n");
+        scanf("%d", &syrupadded);
+        syrup_amt += syrupadded;
+        if (syrup_amt >= lilsyrup) {
+            printf("Syrup has been restocked.\n");
+        } else {
+            printf("Still insufficient syrup. Please add more.\n");
+        }
+    }
+    printf("Current amount of ingredients...\n\n");
+    printf("Coffee Beans: %d\n",beans_amt);
+    printf("Water : %d\n",water_amt);
+    printf("Milk : %d\n",milk_amt);
+    printf("Syrup: %d\n",syrup_amt);
+    int choice;
+    printf("Which ingredient do you want to add to? 1/2/3/4/5 (all of the above) or 0 - Exit \n");
+    scanf("%d",&choice);
+    switch (choice){
+      case 1:
+        printf("Enter the number of beans added: \n");
+        scanf("%d", &beansadded);
+        beans_amt += beansadded;
+        printf("Coffee Beans have been added. \n");
+        break;
+      case 2:
+        printf("Enter the amount of water added: \n");
+        scanf("%d",&wateradded);
+        water_amt+=wateradded;
+        printf("Water has been added. \n");
+        break;
+      case 3:
+        printf("Enter the amount of milk added: \n");
+        scanf("%d",&milkadded);
+        milk_amt+=milkadded;
+        printf("Milk has been added. \n");
+        break;
+      case 4:
+        printf("Enter the amount of syrup added: \n");
+        scanf("%d",&syrupadded);
+        syrup_amt+=syrupadded;
+        printf("Syrup has been added. \n");
+        break;
+      case 5: 
+        printf("Enter the number of beans added: \n");
+        scanf("%d", &beansadded);
+        beans_amt += beansadded;
+        printf("Coffee Beans have been added. \n");
+        printf("Enter the amount of water added: \n");
+        scanf("%d",&wateradded);
+        water_amt+=wateradded;
+        printf("Water has been added. \n");
+        printf("Enter the amount of milk added: \n");
+        scanf("%d",&milkadded);
+        milk_amt+=milkadded;
+        printf("Milk has been added. \n");
+        printf("Enter the amount of syrup added: \n");
+        scanf("%d",&syrupadded);
+        syrup_amt+=syrupadded;
+        printf("Syrup has been added. \n");
+        printf("All ingredients have been restocked. \n");
+      case 0:
+        printf("Exiting...\n");
+        return 0;
+      default:
+      printf("Invalid choice.\n");
+      }
+}
+
+void totalsales(){
+    printf("Current amount of ingredients...\n\n");
+    printf("Coffee Beans: %d\n",beans_amt);
+    printf("Water : %d\n",water_amt);
+    printf("Milk : %d\n",milk_amt);
+    printf("Syrup: %d\n",syrup_amt);
+    printf("Total money earned: %.2f \n",total_amt);
+    printf("Total Espressos sold: %d \n",espresso_sold);
+    printf("Total Cappucinos sold: %d \n", cappuccino_sold);
+    printf("Total Mochas sold: %d \n",mocha_sold);
+    int newstart;
+    printf("Do you want to reset the total sales amount? (1 for Yes, 0 for No): \n");
+    scanf("%d", &newstart);
+    if (newstart) {
+        total_amt = 0;
+        printf("Total sales amount has been reset to 0 AED.\n");
+    }
+}
+
+int resetprice(){
+    int choice;
+    float newprice;
+    printf("Select item to reset price: \n");
+    printf("1. Espresso - %.2f \n",espresso_price);
+    printf("2. Cappuccino - %.2f \n",cappuccino_price);
+    printf("3. Mocha - %.2f \n",mocha_price);
+    printf("0. Exit this menu \n");
+    printf("Enter your choice (1/2/3/0): \n");
+    scanf("%d",&choice);
+    if (choice!=0){
+        printf("Enter new price: \n");
+        scanf("%f", &newprice);
+        switch(choice){
+        case 1:
+            espresso_price= newprice;
+            printf("Espresso price - %.2f \n", espresso_price);
+            break;
+        case 2:
+            cappuccino_price= newprice;
+            printf("Cappuccino price - %.2f \n", cappuccino_price);
+            break;
+        case 3:
+            mocha_price = newprice;
+            printf("Mocha price - %.2f \n", mocha_price);
+            break;
+        case 0:
+            printf("Exiting...\n");
+            return 0;
+        default:
+        printf("Invalid choice.\n");
+        }
+    }
+    else{
+        printf("Exiting...\n");
+    }
+
+    return 0;
+}
+
+int admin_mode(){
+    char password[13];
+    printf("Enter the admin password: \n");
+    scanf("%s",password);
+    if (strcmp(password,adminpass)!=0){
+        printf("Incorrect. Try Again. \n");
+        printf("Enter the admin password: ");
+        scanf("%s",password);
+        if (strcmp(password,adminpass)!=0){
+            printf("Blocked. Contact General Manager. \n");
+            return 0;
+        }
+    }
+
+    int choice;
+    while (true) {
+        printf("\nAdmin Mode\n");
+        printf("1. Ingredient quantities and total sales\n");
+        printf("2. Replenish ingredients\n");
+        printf("3. Change coffee prices\n");
+        printf("0. Exit Admin Mode\n");
+        printf("Enter your choice (1/2/3/0): ");
+        scanf("%d", &choice);
+        switch(choice){
+            case 1: 
+                totalsales();
+                break;
+            case 2:
+                restock_ingredients();
+                break;
+            case 3:
+                resetprice();
+                break;
+            case 0:
+                printf("Exiting admin mode...");
+                return 0;
+            default:
+                printf("Invalid Option. Try Again.");
+        }
+    }
+    return 0;
+}
+
+int main() {
+
+    int choice;  
+    while (1) {
+        printf("\nCoffee Machine\n");
+        printf("1. Order a coffee\n");
+        printf("2. Admin mode\n");
+        printf("3. Exit\n");
+        printf("Enter your choice 1/2/3: ");
+        scanf("%d", &choice);  
+        switch (choice) {
+            case 1:
+                order_coffee();  
+                break;
+            case 2:
+                admin_mode();    
+                break;
+            case 3:
+                printf("Exiting Machine...Bye\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    return 0;
+}
