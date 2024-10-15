@@ -132,6 +132,7 @@ void order_coffee(){
             }
             payment += coins;  
         }
+        payment=0.0;
 
         switch (choice) {
             case 1: espresso_sold += 1; break;
